@@ -14,23 +14,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-
-(custom-set-variables
- '(column-number-mode t)
- '(custom-enabled-themes '(gruvbox-custom))
- '(custom-safe-themes  '(default))
- '(display-line-numbers t)
- '(fringe-mode 0 nil (fringe))
- '(indent-tabs-mode nil)
- '(inhibit-startup-screen t)
- '(initial-scratch-message nil)
- '(menu-bar-mode nil)
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Minimize garbage collection during startup
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -42,7 +25,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Unbind unhelpful keys
-(global-unset-key (kbd "C-x C-d"))      ;; list-directory
+(global-unset-key (kbd "C-x C-d"))     ;; list-directory
 (global-unset-key (kbd "C-x d"))       ;; dired
 (global-unset-key (kbd "C-z"))         ;; suspend-frame
 (global-unset-key (kbd "C-x C-z"))     ;; suspend-frame
@@ -56,21 +39,33 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Save backup files in a custom directory
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
-
-(setq confirm-kill-emacs 'y-or-n-p)
-
-;; Set scratch to text-mode
-(setq initial-major-mode 'text-mode)
-
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(windmove-default-keybindings)
-
 (straight-use-package 'use-package)
+
+(use-package emacs
+  :straight (:type built-in)
+  :init
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (setq backup-directory-alist '(("." . "~/.emacs.d/backups/")))
+  (setq confirm-kill-emacs 'y-or-n-p)
+  (setq initial-major-mode 'text-mode)
+  :config
+  (setq inhibit-startup-screen t)
+  (setq initial-scratch-message nil)
+  (indent-tabs-mode nil)
+  (column-number-mode t)
+  (line-number-mode t)
+  (global-display-line-numbers-mode t)
+  (load-theme 'gruvbox-custom t)
+  (windmove-default-keybindings)
+  :custom
+  (fringe-mode 0 nil)
+  (menu-bar-mode nil)
+  (scroll-bar-mode nil)
+  (tool-bar-mode nil))
 
 (use-package clang-format
   :straight t)
@@ -264,3 +259,9 @@
 (add-hook 'c++-mode-hook (lambda () (clang-format-save-hook-for-this-buffer)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
