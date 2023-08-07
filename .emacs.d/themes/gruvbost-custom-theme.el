@@ -1440,6 +1440,10 @@
  '(ztreep-header-face ((((class color) (min-colors 89)) (:foreground "#9e8e78" :weight bold :height 1.2))))
  '(ztreep-leaf-face ((((class color) (min-colors 89)) (:foreground "#5e5045"))))
  '(ztreep-node-face ((((class color) (min-colors 89)) (:foreground "#076678"))))
+ '(corfu-default ((((class color) (min-colors 89)) (:background "#ebdbb2" :foreground "#5e5045"))))
+ '(corfu-bar ((((class color) (min-colors 89)) (:background "#5e5045"))))
+ '(corfu-border ((((class color) (min-colors 89)) (:background "#5e5045"))))
+ '(corfu-current ((((class color) (min-colors 89)) (:background "#e7d3a2" :foreground "#5e5045"))))
  '(default ((((class color) (min-colors 89)) (:foreground "#5e5045" :background "#fbf1c7")))))
 
 (provide-theme 'gruvbox-custom)

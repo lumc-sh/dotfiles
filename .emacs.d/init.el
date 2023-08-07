@@ -77,13 +77,14 @@
 (use-package fzf
   :straight t
   :bind
-  ("C-x f" . fzf-directory)
+  ("C-x f" . fzf-git-or-fzf-dir)
   ("C-c g" . fzf-grep-in-dir)
   :config
-  (setq fzf/args "-x --color bw --print-query --no-hscroll"
+  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
         fzf/executable "fzf"
         fzf/git-grep-args "-i --line-number %s"
-        fzf/grep-command "rgrep -nH"
+        fzf/grep-command "rg -nH"
+	fzf/directory-start "~/projects"
         fzf/position-bottom t
         fzf/window-height 20))
 
@@ -138,11 +139,6 @@
   :config
   (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
 
-(use-package recentf
-  :config
-;;(add-to-list 'recentf-exclude "/path/to/excluded/dir/")
-  (recentf-mode))
-
 (use-package counsel
   :straight t
   :config
@@ -153,7 +149,6 @@
   :bind
   ("C-x C-f" . counsel-find-file)
   ("M-x" . counsel-M-x)
-  ("C-c f" . counsel-recentf)
   ("C-s" . swiper-isearch)
   ("C-r" . swiper-isearch-backward)
   :init
@@ -213,17 +208,41 @@
   :init
   (ivy-prescient-mode))
 
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (orderless-matching-styles '(orderless-literal orderless-regexp))
+  (completion-category-overrides '((file (styles basic partial-completion))))
+  (ivy-re-builders-alist '((t . orderless-ivy-re-builder)))
+  :config
+  (add-to-list 'ivy-highlight-functions-alist '(orderless-ivy-re-builder . orderless-ivy-highlight)))
+
 (use-package diminish
   :straight t
   :after which-key
   :init
-  (diminish 'counsel-mode       "")
-  (diminish 'eldoc-mode         "")
-  (diminish 'yank-indent-mode   "")
-  (diminish 'tree-sitter-mode   "")
-  (diminish 'eldoc-mode         "")
-  (diminish 'abbrev-mode        "")
-  (diminish 'which-key-mode     ""))
+  (diminish 'counsel-mode              "")
+  (diminish 'eldoc-mode                "")
+  (diminish 'yank-indent-mode          "")
+  (diminish 'tree-sitter-mode          "")
+  (diminish 'eldoc-mode                "")
+  (diminish 'abbrev-mode               "")
+  (diminish 'which-key-mode            "")
+  (diminish 'modern-c++-font-lock-mode ""))
+
+(use-package s
+  :straight t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                vterm-mode-hook
+                shell-mode-hook
+                treemacs-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda() (display-line-numbers-mode 0))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -232,7 +251,6 @@
   (interactive)
   (revert-buffer t (not (buffer-modified-p)) t))
 (global-set-key (kbd "C-c q") 'revert-buffer-no-confirm)
-
 
 (defun infer-indentation-style ()
   ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
@@ -258,10 +276,16 @@
 (add-hook 'c-mode-hook (lambda () (clang-format-save-hook-for-this-buffer)))
 (add-hook 'c++-mode-hook (lambda () (clang-format-save-hook-for-this-buffer)))
 
+
+(defun fzf-git-or-fzf-dir ()
+  "If we're in ~/projects then try to use fzf-git
+   if we aren't in a git repo in ~/projects use fzf-directory
+   if we're not in ~/projects use fzf-directory"
+  (interactive)
+  (condition-case nil
+      (if (s-contains? "projects" default-directory)
+          (fzf-git)
+        (fzf-directory))
+    (user-error (fzf-directory))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
