@@ -134,6 +134,12 @@
                       "--background-index"
                       "--pch-storage=memory"
                       "--completion-style=detailed"))))
+
+(use-package ivy
+  :straight t
+  :init
+  (ivy-mode))
+
 (use-package ivy-xref
   :straight t
   :config
@@ -229,7 +235,8 @@
   (diminish 'eldoc-mode                "")
   (diminish 'abbrev-mode               "")
   (diminish 'which-key-mode            "")
-  (diminish 'modern-c++-font-lock-mode ""))
+  (diminish 'modern-c++-font-lock-mode "")
+  (diminish 'ivy-mode                  ""))
 
 (use-package s
   :straight t)
