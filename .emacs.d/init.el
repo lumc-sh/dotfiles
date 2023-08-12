@@ -60,6 +60,7 @@
   (line-number-mode t)
   (global-display-line-numbers-mode t)
   (load-theme 'gruvbox-custom t)
+  (pixel-scroll-precision-mode t)
   (windmove-default-keybindings)
   :custom
   (fringe-mode 0 nil)
@@ -239,6 +240,9 @@
   (diminish 'ivy-mode                  ""))
 
 (use-package s
+  :straight t)
+
+(use-package magit
   :straight t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
