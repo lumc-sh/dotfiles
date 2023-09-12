@@ -17,10 +17,10 @@
 ;; Minimize garbage collection during startup
 (setq gc-cons-threshold most-positive-fixnum)
 
-;; Lower threshold back to 8 MiB (default is 800kB)
+;; Garbage collect after 64 MiB
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold (expt 2 23))))
+            (setq gc-cons-threshold (expt 2 26))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -28,6 +28,7 @@
 (global-unset-key (kbd "C-x C-d"))     ;; list-directory
 (global-unset-key (kbd "C-x d"))       ;; dired
 (global-unset-key (kbd "C-z"))         ;; suspend-frame
+(global-unset-key (kbd "C-f"))         ;; forward-char
 (global-unset-key (kbd "C-x C-z"))     ;; suspend-frame
 (global-unset-key (kbd "C-x <left>"))  ;; previous-buffer
 (global-unset-key (kbd "C-x <right>")) ;; next-buffer
@@ -53,6 +54,8 @@
   (setq confirm-kill-emacs 'y-or-n-p)
   (setq initial-major-mode 'text-mode)
   :config
+  (setq show-paren-when-point-inside-paren t)
+  (setq show-paren-delay 0)
   (setq inhibit-startup-screen t)
   (setq initial-scratch-message nil)
   (indent-tabs-mode nil)
@@ -70,6 +73,12 @@
 
 (use-package clang-format
   :straight t)
+
+(use-package avy
+  :straight t
+  :bind
+  ("C-f" . avy-goto-char))
+
 
 (use-package yank-indent
   :straight (:host github :repo "jimeh/yank-indent")
@@ -175,8 +184,9 @@
   :after tree-sitter
   :hook (c-mode . ts-fold-mode)
   :hook (c++-mode . ts-fold-mode)
-  :bind (:map c-mode-map ("C-<tab>" . ts-fold-toggle))
-  :bind (:map c++-mode-map ("C-<tab>" . ts-fold-toggle))
+  :bind
+  ("C-`" . ts-fold-toggle)
+  ("C-`" . ts-fold-toggle)
   :config (diminish 'ts-fold-mode ""))
 
 (use-package which-key
@@ -263,6 +273,7 @@
   (revert-buffer t (not (buffer-modified-p)) t))
 (global-set-key (kbd "C-c q") 'revert-buffer-no-confirm)
 
+
 (defun infer-indentation-style ()
   ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
   ;; neither, we use the current indent-tabs-mode
@@ -272,6 +283,7 @@
     (if (> tab-count space-count) (setq indent-tabs-mode t))))
 (add-hook 'c-mode-hook (lambda () (infer-indentation-style)))
 (add-hook 'c++-mode-hook (lambda () (infer-indentation-style)))
+
 
 (defun clang-format-save-hook-for-this-buffer ()
   "Create a buffer local save hook."
@@ -298,5 +310,6 @@
           (fzf-git)
         (fzf-directory))
     (user-error (fzf-directory))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
