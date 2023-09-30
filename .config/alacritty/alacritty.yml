@@ -1,0 +1,67 @@
+env:
+  TERM: xterm-256color
+
+font:
+  normal:
+    family: Source Code Pro
+    style: Regular
+
+  bold:
+    family: Source Code Pro
+    style: Bold
+
+  italic:
+    family: Source Code Pro
+    style: Italic
+
+  bold_italic:
+    family: Source Code Pro
+    style: Bold Italic
+
+  size: 10
+
+hints:
+  enabled:
+    - regex: "(https:|http:)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+      command: firefox
+      post_processing: true
+      mouse:
+        enabled: true
+        mods: Alt
+      binding:
+        key: U
+        mods: Alt
+
+colors:
+  # Default colors
+  primary:
+    background: '0x002b36'
+    foreground: '0xb4bcbc'
+
+  # Normal colors
+  normal:
+    black:   '0x002b36'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0x6c71c4'
+    cyan:    '0x2aa198'
+    white:   '0xb4bcbc'
+
+  # Bright colors
+  bright:
+    black:   '0x657b83'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0x6c71c4'
+    cyan:    '0x2aa198'
+    white:   '0xfdf6e3'
+
+window:
+  opacity: 0.975
+
+scrolling:
+  history: 50000
