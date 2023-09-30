@@ -24,15 +24,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(when (and (fboundp 'native-comp-available-p) (native-comp-available-p))
+  (progn
+    (setq native-comp-async-report-warnings-errors nil)
+    (setq native-comp-deferred-compilation t)
+    (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory))
+    (setq package-native-compile t)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Unbind unhelpful keys
-(global-unset-key (kbd "C-x C-d"))     ;; list-directory
-(global-unset-key (kbd "C-x d"))       ;; dired
-(global-unset-key (kbd "C-z"))         ;; suspend-frame
 (global-unset-key (kbd "C-f"))         ;; forward-char
-(global-unset-key (kbd "C-x C-z"))     ;; suspend-frame
 (global-unset-key (kbd "C-x <left>"))  ;; previous-buffer
 (global-unset-key (kbd "C-x <right>")) ;; next-buffer
+(global-unset-key (kbd "C-x C-d"))     ;; list-directory
+(global-unset-key (kbd "C-x C-z"))     ;; suspend-frame
+(global-unset-key (kbd "C-x d"))       ;; dired
 (global-unset-key (kbd "C-x f"))       ;; set-fill-column
+(global-unset-key (kbd "C-x k"))       ;; kill-buffer (later rebound to persp-kill-buffer)
+(global-unset-key (kbd "C-z"))         ;; suspend-frame
 
 ;; Move binds around to be more ergonomic
 (global-set-key (kbd "C-c v") 'goto-line)
@@ -56,6 +66,7 @@
   :config
   (setq show-paren-when-point-inside-paren t)
   (setq show-paren-delay 0)
+  (setq max-lisp-eval-depth 10000)
   (setq inhibit-startup-screen t)
   (setq initial-scratch-message nil)
   (indent-tabs-mode nil)
@@ -125,15 +136,17 @@
   :straight t)
 
 (use-package cmake-mode
-  :straight t
-  :hook cmake-mode)
+  :straight (:type built-in)
+  :config
+  (setq indent-tabs-mode t)
+  (setq tab-width 4))
 
 (use-package eglot
   :straight t
   :hook (c++-mode . eglot-ensure)
-  :hook (c-mode   . eglot-ensure)
-  :custom
-  (eglot-ignored-server-capabilities '(:inlayHintProvider)))
+  :hook (c-mode   . eglot-ensure))
+;;  :custom
+;;  (eglot-ignored-server-capabilities '(:inlayHintProvider)))
 
 (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
@@ -143,6 +156,8 @@
                       "--malloc-trim"
                       "--background-index"
                       "--pch-storage=memory"
+		      "--clang-tidy"
+		      "--header-insertion=iwyu"
                       "--completion-style=detailed"))))
 
 (use-package ivy
@@ -208,6 +223,7 @@
   ("C-c <left>" . persp-prev)
   ("C-c <right>" . persp-next)
   ("C-x b" . persp-counsel-switch-buffer)
+  ("C-x k" . persp-kill-buffer*)
   ("C-c p c" . persp-switch)
   ("C-c p k" . persp-remove-buffer)
   ("C-c p a" . persp-add-buffer)
@@ -222,8 +238,20 @@
 
 (use-package ivy-prescient
   :straight t
+  :after counsel
   :init
-  (ivy-prescient-mode))
+  (ivy-prescient-mode)
+  (prescient-persist-mode 1)
+  :config
+  (setq ivy-prescient-sort-commands
+        '(:not swiper
+	       swiper-isearch
+               counsel-grep
+               counsel-rg
+               counsel-projectile-rg
+               ivy-switch-buffer
+               counsel-switch-buffer)))
+
 
 (use-package orderless
   :straight t
@@ -235,25 +263,53 @@
   :config
   (add-to-list 'ivy-highlight-functions-alist '(orderless-ivy-re-builder . orderless-ivy-highlight)))
 
+(use-package modern-cpp-font-lock
+  :straight t
+  :requires diminish
+  :hook (c++-mode . modern-c++-font-lock-mode)
+  :config (diminish 'modern-c++-font-lock-mode ""))
+
+
+(use-package dumb-jump
+  :straight t
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+(use-package avy
+  :straight t
+  :bind
+  ("C-f" . avy-goto-char))
+
+(use-package s
+  :straight t)
+
+(use-package ivy-rich
+  :straight t
+  :after ivy
+  :init
+  (ivy-rich-mode 1)
+  :config
+  (setq ivy-rich-path-style 'abbrev))
+
+(use-package yaml-mode
+  :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package diminish
   :straight t
-  :after which-key
   :init
   (diminish 'counsel-mode              "")
   (diminish 'eldoc-mode                "")
   (diminish 'yank-indent-mode          "")
   (diminish 'tree-sitter-mode          "")
-  (diminish 'eldoc-mode                "")
   (diminish 'abbrev-mode               "")
   (diminish 'which-key-mode            "")
-  (diminish 'modern-c++-font-lock-mode "")
-  (diminish 'ivy-mode                  ""))
-
-(use-package s
-  :straight t)
-
-(use-package magit
-  :straight t)
+  (diminish 'ivy-mode                  "")
+  (diminish 'ivy-rich-mode             "")
+  (diminish 'ivy-prescient-mode        ""))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
