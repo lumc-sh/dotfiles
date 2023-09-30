@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+filename=$(date +%Y-%m-%d-%H-%M-%S)
+( maim -u -s -m 5 ~/Pictures/Screenshots/$filename.png ; cat ~/Pictures/Screenshots/$filename.png |  xclip -selection clipboard -t image/png )
