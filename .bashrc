@@ -17,7 +17,7 @@ BROWSER=/usr/bin/firefox
 EDITOR=/usr/bin/emacs
 
 # Prompt
-. .git-prompt.sh
+. ~/.git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=1
 GIT='$(__git_ps1 " (%s)") '
 BLUE='\[\033[01;34m\]'
